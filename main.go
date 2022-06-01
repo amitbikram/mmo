@@ -1,9 +1,9 @@
 package main
 
 import (
-	"image"
-	_ "image/png"
 	"os"
+
+	"github.com/amitbikram/mmo/engine/asset"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/pixelgl"
@@ -27,8 +27,9 @@ func runGame() {
 	}
 
 	win.SetSmooth(false)
+	load := asset.NewLoad(os.DirFS("./"))
 
-	boySprite, err := getSPrite("boy.png")
+	boySprite, err := load.Sprite(".boy.png")
 	if err != nil {
 		panic(err)
 	}
@@ -36,22 +37,19 @@ func runGame() {
 
 	for !win.JustPressed(pixelgl.KeyEscape) {
 		win.Clear(pixel.RGB(0, 0, 0))
-		boySprite.Draw(win, pixel.IM.Scaled(pixel.ZV, 2.0).Moved(boyPosition))
+		if win.Pressed(pixelgl.KeyLeft) {
+			boyPosition.X -= 2.0
+		}
+		if win.Pressed(pixelgl.KeyRight) {
+			boyPosition.X += 2.0
+		}
+		if win.Pressed(pixelgl.KeyUp) {
+			boyPosition.Y += 2.0
+		}
+		if win.Pressed(pixelgl.KeyDown) {
+			boyPosition.Y -= 2.0
+		}
+		boySprite.Draw(win, pixel.IM.Scaled(pixel.ZV, 0.2).Moved(boyPosition))
 		win.Update()
 	}
-}
-
-func getSPrite(path string) (*pixel.Sprite, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	img, _, err := image.Decode(file)
-
-	if err != nil {
-		return nil, err
-	}
-
-	pic := pixel.PictureDataFromImage(img)
-	return pixel.NewSprite(pic, pic.Bounds()), nil
 }
