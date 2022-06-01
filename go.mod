@@ -1,4 +1,4 @@
-module mmo
+module github.com/amitbikram/mmo
 
 go 1.17
 
